@@ -72,10 +72,11 @@ class MapImage:
             self.canvas.putpixel((point[2], point[1]), color)
 
         for point in self.pathfinder.optimal_path:
-            self.canvas.putpixel((point[2], point[1]), (255, 59, 0))
+            self.canvas.putpixel((point[2], point[1]), (0, 255, 0))
         
         self.canvas.save(file_name)
-            
+
+
 class PathFinder:
     def __init__(self, map_data):
         self.map_data = map_data
@@ -185,16 +186,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("file", help="Enter data file")
     parser.add_argument("file_name", help="Enter file name to save as")
-    parser.add_argument("path_color", nargs=3, help="Color for all the\
-        paths in this format - (r, g, b)", type=int)
+    parser.add_argument("path_color", nargs='?', help="Color for all the\
+        paths in this format - [255 255 255]", type=int)
 
     args = parser.parse_args()
 
+    
 
     map = ElevationMap(args.file)
     pathfinder = PathFinder(map)
     map_image = MapImage(map, pathfinder)
     map_image.draw_image(args.file_name + ".png")
-    map_image.pathfinder.find_optimal_path()    
-    map_image.draw_path(args.file_name + "_path.png", tuple(args.path_color))
+    map_image.pathfinder.find_optimal_path()
+
+    try:
+        map_image.draw_path(args.file_name + "_path.png", tuple(args.path_color))
+    except TypeError:
+        args.path_color = (206, 158, 255)
+        map_image.draw_path(args.file_name + "_path.png", args.path_color)
+    
     
